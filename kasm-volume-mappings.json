@@ -4,12 +4,24 @@
   "title": "KASM Volume Mappings configuration",
   "description": "https://kasmweb.com/docs/latest/guide/persistent_data/volume_mapping.html#volume-mapping-configuration-options",
   "type": "object",
-  "propertyNames": {
-    "pattern": "^/.+",
-    "errorMessage": "Top-level keys must be absolute host paths, e.g. start with '/'."
+  
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "Inline JSON-Schema declaration for Zed"
+    }
   },
+  
+  "patternProperties": {
+    "^/.+": {
+      "$ref": "#/$defs/mountConfig"
+    }
+  },
+
   "additionalProperties": false,
   "unevaluatedProperties": false,
+  
   "$defs": {
     "mountConfig": {
       "type": "object",
@@ -64,11 +76,6 @@
         "gid"
       ],
       "additionalProperties": false
-    }
-  },
-  "patternProperties": {
-    "^/.+": {
-      "$ref": "#/$defs/mountConfig"
     }
   }
 }
