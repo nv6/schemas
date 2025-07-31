@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/nv6/schemas/master/kasm-volume-mappings.json",
+  "title": "KASM Volume Mappings configuration",
+  "description": "https://kasmweb.com/docs/latest/guide/persistent_data/volume_mapping.html#volume-mapping-configuration-options",
+  "type": "object",
+  "propertyNames": {
+    "pattern": "^/.+",
+    "errorMessage": "Top-level keys must be absolute host paths, e.g. start with '/'."
+  },
+  "additionalProperties": false,
+  "unevaluatedProperties": false,
+  "$defs": {
+    "mountConfig": {
+      "type": "object",
+      "properties": {
+        "bind": {
+          "type": "string",
+          "pattern": "^/.+",
+          "description": "The absolute path inside the Kasm where the volume will be mounted.",
+          "errorMessage": {
+            "pattern": "`bind` must be an absolute path, starting with '/'."
+          }
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "rw",
+            "ro"
+          ],
+          "description": "Mount mode: read-write or read-only"
+        },
+        "uid": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The linux user id ownership that should be given to the volume. This permission is applied to the folder on the host. The uid must be 1000 in order for the Kasm container use to access the files."
+        },
+        "gid": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The linux group id ownership that should be given to the volume. This permission is applied to the folder on the host. The gid must be 1000 in order for the Kasm container use to access the files."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If true the volume must be accessible in order to provision the Kasm when requested. If false the system will allow the Kasm to be provision even if connectivity to the volume cannot be established. If not specified the default is true.",
+          "default": true
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "When a Kasm is provisioned, the system will attempt to establish connectivity to the volume specified. The system will wait the specified number of seconds before deeming the connectivity has failed. If not specified the default is 10 seconds",
+          "default": 10
+        },
+        "skip_check": {
+          "type": "boolean",
+          "description": "When a Kasm is provisioned, the system will attempt to establish connectivity to the volume specified and ensure the ownership of that directory matches the uid:gid specified with a `chown`. On some filesystems such as those mounted as read only, this check will fail or error. The administrator may choose to set this value to true so the system will skip the check. The default is false if not specified.",
+          "default": false
+        }
+      },
+      "required": [
+        "bind",
+        "mode",
+        "uid",
+        "gid"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^/.+": {
+      "$ref": "#/$defs/mountConfig"
+    }
+  }
+}
